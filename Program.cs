@@ -53,6 +53,8 @@ app.MapGet("/no", () =>
 
 app.MapGet("/deploy-final", () => "CI/CD com runner self-hosted funcionando 🚀");
 
+app.MapGet("/auto", () => "deploy automatico funcionando 🚀");
+
 
 app.Run();
 

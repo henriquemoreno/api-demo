@@ -13,25 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login Docker Hub
-        run: |
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Build Docker image
-        run: |
-          docker build -t henriquetgam/apidemo:latest .
+        run: docker build -t henriquetgam/apidemo:latest .
 
       - name: Push Docker image
-        run: |
-          docker push henriquetgam/apidemo:latest
+        run: docker push henriquetgam/apidemo:latest
 
-      - name: Stop old container (if exists)
+      - name: Deploy container
         run: |
           docker rm -f apidemo || true
-
-      - name: Run new container
-        run: |
+          docker pull henriquetgam/apidemo:latest
           docker run -d \
             --name apidemo \
             -p 8080:8080 \
+            --restart unless-stopped \
             henriquetgam/apidemo:latest
