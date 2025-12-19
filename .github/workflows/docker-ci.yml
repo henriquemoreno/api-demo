@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image
+name: Build and Deploy API
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +22,19 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
           push: true
-          tags: |
-            henriquetgam/apidemo:latest
+          tags: henriquetgam/apidemo:latest
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull henriquetgam/apidemo:latest
+            docker rm -f apidemo || true
+            docker run -d \
+              --name apidemo \
+              -p 8080:8080 \
+              henriquetgam/apidemo:latest
