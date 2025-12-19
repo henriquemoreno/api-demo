@@ -46,6 +46,11 @@ app.MapGet("/teste", () =>
     return "Retorno endpoint de teste.";
 });
 
+app.MapGet("/no", () =>
+{
+    return "Big No.";
+});
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

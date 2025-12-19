@@ -31,10 +31,11 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          timeout: 30s
+          command_timeout: 10m
+          debug: true
           script: |
-            docker pull henriquetgam/apidemo:latest
-            docker rm -f apidemo || true
-            docker run -d \
-              --name apidemo \
-              -p 8080:8080 \
-              henriquetgam/apidemo:latest
+            whoami
+            hostname
+            docker ps
+
