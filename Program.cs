@@ -51,6 +51,9 @@ app.MapGet("/no", () =>
     return "Big No.";
 });
 
+app.MapGet("/deploy-final", () => "CI/CD com runner self-hosted funcionando 🚀");
+
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
