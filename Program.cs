@@ -55,6 +55,16 @@ app.MapGet("/deploy-final", () => "CI/CD com runner self-hosted funcionando 🚀
 
 app.MapGet("/auto", () => "deploy automatico funcionando 🚀");
 
+app.MapGet("/produtos", () =>
+{
+    var produtos = new List<string>
+    {
+       "Computador",
+       "Geladeira",
+       "TV",
+       "Monitor" 
+    };
+});
 
 app.Run();
 
