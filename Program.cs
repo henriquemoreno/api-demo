@@ -64,6 +64,8 @@ app.MapGet("/produtos", () =>
        "TV",
        "Monitor" 
     };
+
+    return produtos;
 });
 
 app.Run();
