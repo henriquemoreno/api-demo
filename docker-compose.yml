@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  api:
+    image: henriquetgam/apidemo:latest
+    container_name: apidemo
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
