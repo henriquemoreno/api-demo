@@ -23,5 +23,6 @@ jobs:
 
       - name: Deploy with Docker Compose
         run: |
+          docker rm -f apidemo || true
           docker compose pull
           docker compose up -d --remove-orphans
