@@ -70,7 +70,7 @@ app.MapGet("/produtos", () =>
 
 app.MapGet("/compose", () =>
 {
-    return "Compose configurado";
+    return "Compose configurado - COM VERSIONAMENTO";
 });
 
 app.Run();

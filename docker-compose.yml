@@ -1,6 +1,6 @@
 services:
   api:
-    image: henriquetgam/apidemo:latest
+    image: henriquetgam/apidemo:${IMAGE_TAG}
     container_name: apidemo
     ports:
       - "8080:8080"

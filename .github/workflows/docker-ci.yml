@@ -15,14 +15,15 @@ jobs:
       - name: Docker login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Build image
-        run: docker build -t henriquetgam/apidemo:latest .
+      - name: Build Docker image
+        run: docker build -t henriquetgam/apidemo:${{ github.sha }} .
 
-      - name: Push image
-        run: docker push henriquetgam/apidemo:latest
+      - name: Push Docker image
+        run: docker push henriquetgam/apidemo:${{ github.sha }}
 
       - name: Deploy with Docker Compose
         run: |
+          export IMAGE_TAG=${{ github.sha }}
           docker rm -f apidemo || true
           docker compose pull
-          docker compose up -d --remove-orphans
+          docker compose up -d --remove-orphans         
