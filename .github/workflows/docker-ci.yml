@@ -28,4 +28,4 @@ jobs:
           docker rm -f apidemo || true
           docker compose pull
           docker compose up -d --remove-orphans
-          ./wait-for-healthy.sh        
+          ./wait-for-healthy.sh apidemo-green     
