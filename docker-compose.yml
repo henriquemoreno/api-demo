@@ -4,12 +4,16 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+    environment:
+      - DEPLOY_SLOT=blue
 
   apidemo-green:
     image: henriquetgam/apidemo:${IMAGE_TAG}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+    environment:
+      - DEPLOY_SLOT=green
 
   nginx:
     image: nginx:alpine

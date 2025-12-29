@@ -16,6 +16,22 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    var slot = Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown";
+
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers["X-Deploy-Slot"] = slot;
+        return Task.CompletedTask;
+    });
+
+    await next();
+});
+
+app.Logger.LogInformation("API started | Slot: {Slot}", 
+    Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown");
+
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 var summaries = new[]

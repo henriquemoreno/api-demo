@@ -24,25 +24,27 @@ jobs:
       - name: Deploy Blue/Green (automatic)
         run: |
           chmod +x wait-for-healthy.sh switch-slot.sh
-          
+
           export IMAGE_TAG=${{ github.sha }}
-          
+
           ACTIVE_SLOT=$(cat active-slot.txt)
           if [ "$ACTIVE_SLOT" = "blue" ]; then
             NEW_SLOT="green"
           else
             NEW_SLOT="blue"
           fi
-          
+
           echo "Deploying to slot: $NEW_SLOT"
-          
+
           docker compose pull
-          
+
           docker compose up -d --no-deps --force-recreate apidemo-$NEW_SLOT
-          
+
           ./wait-for-healthy.sh apidemo-$NEW_SLOT
-          
+
           ./switch-slot.sh
-          
+
           docker compose up -d nginx
+
+          docker compose up -d --remove-orphans
 
