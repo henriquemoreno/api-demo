@@ -1,29 +1,28 @@
 #!/bin/bash
 set -e
 
-SERVICE_NAME="$1"   # ex: api-demo-apidemo-green-1
-MAX_RETRIES=30
+CONTAINER_NAME=$1
+MAX_ATTEMPTS=30
 SLEEP_TIME=2
 
-if [ -z "$SERVICE_NAME" ]; then
+if [ -z "$CONTAINER_NAME" ]; then
   echo "❌ Nome do container não informado"
-  echo "Uso: ./wait-for-ready.sh <container_name>"
   exit 1
 fi
 
-echo "⏳ Aguardando container '$SERVICE_NAME' ficar READY..."
+echo "⏳ Aguardando container '$CONTAINER_NAME' ficar READY..."
 
-for i in $(seq 1 $MAX_RETRIES); do
-  if docker inspect "$SERVICE_NAME" >/dev/null 2>&1; then
-    if docker exec "$SERVICE_NAME" curl -sf http://localhost:8080/ready >/dev/null; then
-      echo "✅ Container '$SERVICE_NAME' está READY!"
-      exit 0
-    fi
+for i in $(seq 1 $MAX_ATTEMPTS); do
+  STATUS=$(docker exec "$CONTAINER_NAME" curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ready || true)
+
+  if [ "$STATUS" = "200" ]; then
+    echo "✅ Container '$CONTAINER_NAME' está READY!"
+    exit 0
   fi
 
-  echo "Tentativa $i/$MAX_RETRIES - ainda não READY"
+  echo "Tentativa $i/$MAX_ATTEMPTS - ainda não READY (HTTP $STATUS)"
   sleep $SLEEP_TIME
 done
 
-echo "❌ Container '$SERVICE_NAME' NÃO ficou READY a tempo"
+echo "❌ Container '$CONTAINER_NAME' NÃO ficou READY a tempo"
 exit 1
