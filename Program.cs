@@ -39,6 +39,26 @@ app.MapGet("/health", () => Results.Ok(new
     slot = Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown"
 }));
 
+var appStartTime = DateTime.UtcNow;
+
+app.MapGet("/ready", () =>
+{
+    // Simula warmup (ex: conexões, cache, migrations etc.)
+    var uptime = DateTime.UtcNow - appStartTime;
+
+    if (uptime.TotalSeconds < 5)
+    {
+        return Results.StatusCode(503);
+    }
+
+    return Results.Ok(new
+    {
+        status = "ready",
+        service = "ApiDemo"
+    });
+});
+
+
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
