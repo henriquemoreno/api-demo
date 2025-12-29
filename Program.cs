@@ -32,7 +32,12 @@ app.Use(async (context, next) =>
 app.Logger.LogInformation("API started | Slot: {Slot}", 
     Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown");
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    service = "ApiDemo",
+    slot = Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown"
+}));
 
 var summaries = new[]
 {
