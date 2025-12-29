@@ -8,7 +8,37 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 var appVersion = Environment.GetEnvironmentVariable("APP_VERSION") ?? "unknown";
-var appSlot = Environment.GetEnvironmentVariable("APP_SLOT") ?? "unknown";
+var appSlot = Environment.GetEnvironmentVariable("APP_SLOT") ?? "unknown";    
+var appStartTime = DateTime.UtcNow;
+
+app.MapGet("/health", () =>
+{
+    return Results.Ok(new
+    {
+        status = "healthy",
+        service = "ApiDemo",
+        slot = appSlot,
+        version = appVersion
+    });
+});
+
+app.MapGet("/ready", () =>
+{
+    var uptime = DateTime.UtcNow - appStartTime;
+
+    if (uptime.TotalSeconds < 5)
+    {
+        return Results.StatusCode(503);
+    }
+
+    return Results.Ok(new
+    {
+        status = "ready",
+        service = "ApiDemo",
+        slot = appSlot,
+        version = appVersion
+    });
+});
 
 app.Use(async (context, next) =>
 {
@@ -17,15 +47,8 @@ app.Use(async (context, next) =>
     await next();
 });
 
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
+app.Logger.LogInformation("API started | Slot: {Slot}", 
+    Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown");
 
 app.Use(async (context, next) =>
 {
@@ -40,34 +63,14 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.Logger.LogInformation("API started | Slot: {Slot}", 
-    Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown");
-
-app.MapGet("/health", () => Results.Ok(new
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    status = "healthy",
-    service = "ApiDemo",
-    slot = Environment.GetEnvironmentVariable("DEPLOY_SLOT") ?? "unknown"
-}));
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-var appStartTime = DateTime.UtcNow;
-
-app.MapGet("/ready", () =>
-{
-    // Simula warmup (ex: conexões, cache, migrations etc.)
-    var uptime = DateTime.UtcNow - appStartTime;
-
-    if (uptime.TotalSeconds < 30)
-    {
-        return Results.StatusCode(503);
-    }
-
-    return Results.Ok(new
-    {
-        status = "ready",
-        service = "ApiDemo"
-    });
-});
+app.UseHttpsRedirection();
 
 var summaries = new[]
 {
