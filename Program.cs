@@ -46,7 +46,7 @@ app.MapGet("/ready", () =>
     // Simula warmup (ex: conexões, cache, migrations etc.)
     var uptime = DateTime.UtcNow - appStartTime;
 
-    if (uptime.TotalSeconds < 5)
+    if (uptime.TotalSeconds < 30)
     {
         return Results.StatusCode(503);
     }
