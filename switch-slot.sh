@@ -18,7 +18,7 @@ echo "🔁 Slot ativo atual: $ACTIVE_SLOT"
 echo "🚀 Tentando ativar slot: $NEW_SLOT"
 
 # Aguarda o container novo ficar READY
-./wait-for-ready.sh "api-demo-apidemo-$NEW_SLOT-1"
+./wait-for-ready.sh "apidemo-$NEW_SLOT"
 
 # Só troca tráfego se passou no READY
 echo "$NEW_SLOT" > active-slot.txt
