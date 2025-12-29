@@ -1,22 +1,29 @@
 #!/bin/bash
 
-CONTAINER_NAME="${1}"
+SERVICE_NAME="$1"
 
-if [ -z "$CONTAINER_NAME" ]; then
-  echo "❌ Container name not provided"
+if [ -z "$SERVICE_NAME" ]; then
+  echo "❌ Service name not provided"
+  exit 1
+fi
+
+CONTAINER_ID=$(docker compose ps -q "$SERVICE_NAME")
+
+if [ -z "$CONTAINER_ID" ]; then
+  echo "❌ No container found for service $SERVICE_NAME"
   exit 1
 fi
 
 MAX_RETRIES=30
 SLEEP_TIME=2
 
-echo "⏳ Aguardando container '$CONTAINER_NAME' ficar healthy..."
+echo "⏳ Aguardando service '$SERVICE_NAME' ficar healthy..."
 
 for i in $(seq 1 $MAX_RETRIES); do
-  STATUS=$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null)
+  STATUS=$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_ID" 2>/dev/null)
 
   if [ "$STATUS" = "healthy" ]; then
-    echo "✅ Container '$CONTAINER_NAME' está healthy!"
+    echo "✅ Service '$SERVICE_NAME' está healthy!"
     exit 0
   fi
 
@@ -24,6 +31,6 @@ for i in $(seq 1 $MAX_RETRIES); do
   sleep $SLEEP_TIME
 done
 
-echo "❌ Container '$CONTAINER_NAME' não ficou healthy a tempo"
-docker logs "$CONTAINER_NAME" || true
+echo "❌ Service '$SERVICE_NAME' não ficou healthy a tempo"
+docker logs "$CONTAINER_ID" || true
 exit 1
