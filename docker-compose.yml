@@ -2,16 +2,14 @@ services:
   apidemo-blue:
     image: henriquetgam/apidemo:${IMAGE_TAG}
     environment:
-      - DEPLOY_SLOT=blue
-    expose:
-      - "8080"
+      - APP_SLOT=blue
+      - APP_VERSION=${IMAGE_TAG}
 
   apidemo-green:
     image: henriquetgam/apidemo:${IMAGE_TAG}
     environment:
-      - DEPLOY_SLOT=green
-    expose:
-      - "8080"
+      - APP_SLOT=green
+      - APP_VERSION=${IMAGE_TAG}
 
   nginx:
     image: nginx:alpine

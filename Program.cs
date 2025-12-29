@@ -7,6 +7,17 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+var appVersion = Environment.GetEnvironmentVariable("APP_VERSION") ?? "unknown";
+var appSlot = Environment.GetEnvironmentVariable("APP_SLOT") ?? "unknown";
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-App-Version"] = appVersion;
+    context.Response.Headers["X-App-Slot"] = appSlot;
+    await next();
+});
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
