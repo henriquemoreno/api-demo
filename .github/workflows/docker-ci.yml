@@ -21,9 +21,11 @@ jobs:
       - name: Push Docker image
         run: docker push henriquetgam/apidemo:${{ github.sha }}
 
-      - name: Deploy with Docker Compose
+      - name: Deploy with Docker Compose (safe)
         run: |
+          chmod +x wait-for-healthy.sh
           export IMAGE_TAG=${{ github.sha }}
           docker rm -f apidemo || true
           docker compose pull
-          docker compose up -d --remove-orphans         
+          docker compose up -d --remove-orphans
+          ./wait-for-healthy.sh        
