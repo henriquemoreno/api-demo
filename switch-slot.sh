@@ -14,4 +14,6 @@ fi
 echo "$NEW_SLOT" > active-slot.txt
 echo "✅ Tráfego trocado para $NEW_SLOT"
 
+export IMAGE_TAG=$GITHUB_SHA
+
 docker compose up -d nginx

@@ -43,8 +43,19 @@ var appStartTime = DateTime.UtcNow;
 
 app.MapGet("/ready", () =>
 {
+    // Simula warmup (ex: conexões, cache, migrations etc.)
+    var uptime = DateTime.UtcNow - appStartTime;
 
- return Results.StatusCode(503);
+    if (uptime.TotalSeconds < 5)
+    {
+        return Results.StatusCode(503);
+    }
+
+    return Results.Ok(new
+    {
+        status = "ready",
+        service = "ApiDemo"
+    });
 });
 
 
