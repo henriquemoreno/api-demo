@@ -37,11 +37,12 @@ jobs:
           echo "Deploying to slot: $NEW_SLOT"
           
           docker compose pull
-          docker compose up -d apidemo-$NEW_SLOT
+          
+          docker compose up -d --no-deps --force-recreate apidemo-$NEW_SLOT
           
           ./wait-for-healthy.sh apidemo-$NEW_SLOT
           
           ./switch-slot.sh
           
           docker compose up -d nginx
-  
+
