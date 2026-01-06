@@ -1,12 +1,12 @@
 services:
   apidemo-blue:
-    image: henriquetgam/apidemo:${IMAGE_TAG}
+    image: ghcr.io/henriquemoreno/apidemo:${IMAGE_TAG}
     environment:
       - APP_SLOT=blue
       - APP_VERSION=${IMAGE_TAG}
 
   apidemo-green:
-    image: henriquetgam/apidemo:${IMAGE_TAG}
+    image: ghcr.io/henriquemoreno/apidemo:${IMAGE_TAG}
     environment:
       - APP_SLOT=green
       - APP_VERSION=${IMAGE_TAG}
