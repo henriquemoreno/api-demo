@@ -1,46 +1,44 @@
-name: Build and Deploy API
+name: Build and Deploy API (GHCR)
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-deploy:
     runs-on: self-hosted
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Docker login
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-      - name: Build Docker image
-        run: docker build -t henriquetgam/apidemo:${{ github.sha }} .
-
-      - name: Push Docker image
-        run: docker push henriquetgam/apidemo:${{ github.sha }}
-
-      - name: Deploy GREEN + Canary + Promote
+      # 🔐 Login no GitHub Container Registry (GHCR)
+      - name: Login to GHCR
         run: |
-          set -e
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # 🏗️ Build da imagem
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ghcr.io/henriquemoreno/apidemo:${{ github.sha }} \
+            -t ghcr.io/henriquemoreno/apidemo:latest \
+            .
+
+      # 📦 Push para o GHCR
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/henriquemoreno/apidemo:${{ github.sha }}
+          docker push ghcr.io/henriquemoreno/apidemo:latest
+
+      # 🚀 Deploy Blue/Green automático
+      - name: Deploy Blue/Green
+        run: |
           export IMAGE_TAG=${{ github.sha }}
-
-          chmod +x deploy/*.sh
-
-          echo "🚀 Subindo GREEN"
-          docker compose up -d apidemo-green
-
-          echo "⏳ Aguardando READY do GREEN"
-          ./deploy/wait-for-ready.sh api-demo-apidemo-green-1
-
-          echo "🟡 Ativando CANARY"
-          ./deploy/enable-canary.sh green
-
-          echo "⏳ Validando novamente após canary"
-          ./deploy/wait-for-ready.sh api-demo-apidemo-green-1
-
-          echo "✅ Promovendo GREEN para 100%"
-          ./deploy/promote-canary.sh green
-
-        shell: bash
+          chmod +x deploy/wait-for-ready.sh deploy/switch-slot.sh
+          ./deploy/switch-slot.sh green
