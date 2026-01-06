@@ -18,7 +18,7 @@ echo "🔁 Slot ativo atual: $ACTIVE_SLOT"
 echo "🚀 Preparando deploy do slot: $NEW_SLOT"
 
 # Aguarda o novo slot ficar READY
-./deploy/wait-for-ready.sh "api-demo-apidemo-$NEW_SLOT-1"
+./deploy/wait-for-ready.sh "apidemo-$NEW_SLOT"
 
 # Promove o slot
 echo "$NEW_SLOT" > active-slot.txt

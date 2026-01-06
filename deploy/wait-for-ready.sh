@@ -13,7 +13,7 @@ fi
 echo "⏳ Aguardando service '$SERVICE_NAME' ficar READY..."
 
 for i in $(seq 1 $MAX_ATTEMPTS); do
-  CONTAINER_ID=$(docker compose ps -q "$SERVICE_NAME" | head -n 1)
+  CONTAINER_ID=$(docker compose ps -q "$SERVICE_NAME")
 
   if [ -n "$CONTAINER_ID" ]; then
     STATUS=$(docker exec "$CONTAINER_ID" curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ready || true)
@@ -22,9 +22,12 @@ for i in $(seq 1 $MAX_ATTEMPTS); do
       echo "✅ Service '$SERVICE_NAME' está READY!"
       exit 0
     fi
+
+    echo "Tentativa $i/$MAX_ATTEMPTS - ainda não READY (HTTP $STATUS)"
+  else
+    echo "Tentativa $i/$MAX_ATTEMPTS - container ainda não criado"
   fi
 
-  echo "Tentativa $i/$MAX_ATTEMPTS - ainda não READY"
   sleep $SLEEP_TIME
 done
 
