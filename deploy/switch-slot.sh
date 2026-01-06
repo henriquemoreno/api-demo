@@ -25,4 +25,5 @@ echo "$NEW_SLOT" > active-slot.txt
 echo "✅ Tráfego trocado para $NEW_SLOT"
 
 export IMAGE_TAG=${IMAGE_TAG:-latest}
+export ACTIVE_SLOT=$NEW_SLOT
 docker compose up -d nginx
