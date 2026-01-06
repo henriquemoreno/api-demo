@@ -15,18 +15,16 @@ if [ "$NEW_SLOT" = "$ACTIVE_SLOT" ]; then
 fi
 
 echo "🔁 Slot ativo atual: $ACTIVE_SLOT"
-echo "🚀 Preparando deploy do slot: $NEW_SLOT"
+echo "🚀 Promovendo slot: $NEW_SLOT"
 
 # Aguarda o novo slot ficar READY
 ./deploy/wait-for-ready.sh "apidemo-$NEW_SLOT"
 
-# Promove o slot
+# Atualiza slot ativo
 echo "$NEW_SLOT" > active-slot.txt
+export ACTIVE_SLOT=$NEW_SLOT
+
 echo "✅ Tráfego trocado para $NEW_SLOT"
 
-export ACTIVE_SLOT=$NEW_SLOT
-export CANARY_SLOT=""
-export CANARY_PERCENT=0
-export IMAGE_TAG=${IMAGE_TAG:-latest}
-
+# Recarrega nginx com o slot correto
 docker compose up -d nginx
