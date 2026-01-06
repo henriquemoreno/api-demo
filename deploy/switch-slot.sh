@@ -17,17 +17,12 @@ fi
 echo "🔁 Slot ativo atual: $ACTIVE_SLOT"
 echo "🚀 Preparando deploy do slot: $NEW_SLOT"
 
-# 1️⃣ Garante IMAGE_TAG ANTES de qualquer compose
-export IMAGE_TAG=${GITHUB_SHA:-latest}
+# Aguarda o novo slot ficar READY
+./deploy/wait-for-ready.sh "api-demo-apidemo-$NEW_SLOT-1"
 
-# 2️⃣ Sobe o novo slot com a imagem correta
-docker compose up -d apidemo-$NEW_SLOT
-
-# 3️⃣ Aguarda o novo slot ficar READY
-./wait-for-ready.sh "apidemo-$NEW_SLOT"
-
-# 4️⃣ Só agora troca o tráfego
+# Promove o slot
 echo "$NEW_SLOT" > active-slot.txt
 echo "✅ Tráfego trocado para $NEW_SLOT"
 
+export IMAGE_TAG=${IMAGE_TAG:-latest}
 docker compose up -d nginx
