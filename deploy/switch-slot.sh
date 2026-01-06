@@ -24,9 +24,9 @@ echo "🚀 Preparando deploy do slot: $NEW_SLOT"
 echo "$NEW_SLOT" > active-slot.txt
 echo "✅ Tráfego trocado para $NEW_SLOT"
 
-export IMAGE_TAG=${IMAGE_TAG:-latest}
 export ACTIVE_SLOT=$NEW_SLOT
 export CANARY_SLOT=""
 export CANARY_PERCENT=0
+export IMAGE_TAG=${IMAGE_TAG:-latest}
 
 docker compose up -d nginx
