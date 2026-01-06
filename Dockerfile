@@ -1,25 +1,22 @@
 # =========================
-# Etapa 1 - Build
+# Build
 # =========================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 COPY ApiDemo.csproj .
-RUN dotnet restore ApiDemo.csproj
+RUN dotnet restore
 
 COPY . .
-RUN dotnet publish -c Release -o /out
+RUN dotnet publish -c Release -o /out /p:UseAppHost=false
 
 # =========================
-# Etapa 2 - Runtime
+# Runtime (ALPINE)
 # =========================
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 WORKDIR /app
 
-# 👉 DEPENDÊNCIAS DE RUNTIME
-RUN apt-get update \
- && apt-get install -y curl \
- && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
 COPY --from=build /out .
 
