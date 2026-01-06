@@ -97,6 +97,13 @@ app.MapGet("/hello", () =>
     return "Hello World!";
 });
 
+app.MapGet("/version", () => new
+{
+    version = "deploy-test-1",
+    time = DateTime.UtcNow
+});
+
+
 app.MapGet("/teste", () =>
 {
     return "Retorno endpoint de teste.";

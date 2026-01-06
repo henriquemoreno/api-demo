@@ -21,9 +21,26 @@ jobs:
       - name: Push Docker image
         run: docker push henriquetgam/apidemo:${{ github.sha }}
 
-      - name: Deploy blue/green
+      - name: Deploy GREEN + Canary + Promote
         run: |
-          chmod +x wait-for-ready.sh switch-slot.sh
-          ./switch-slot.sh green
+          set -e
+          export IMAGE_TAG=${{ github.sha }}
 
+          chmod +x deploy/*.sh
 
+          echo "🚀 Subindo GREEN"
+          docker compose up -d apidemo-green
+
+          echo "⏳ Aguardando READY do GREEN"
+          ./deploy/wait-for-ready.sh api-demo-apidemo-green-1
+
+          echo "🟡 Ativando CANARY"
+          ./deploy/enable-canary.sh green
+
+          echo "⏳ Validando novamente após canary"
+          ./deploy/wait-for-ready.sh api-demo-apidemo-green-1
+
+          echo "✅ Promovendo GREEN para 100%"
+          ./deploy/promote-canary.sh green
+
+        shell: bash
