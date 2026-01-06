@@ -26,4 +26,7 @@ echo "✅ Tráfego trocado para $NEW_SLOT"
 
 export IMAGE_TAG=${IMAGE_TAG:-latest}
 export ACTIVE_SLOT=$NEW_SLOT
+export CANARY_SLOT=""
+export CANARY_PERCENT=0
+
 docker compose up -d nginx
