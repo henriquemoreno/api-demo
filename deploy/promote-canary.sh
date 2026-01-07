@@ -1,7 +1,10 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Promovendo produção para 100% GREEN"
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT_DIR"
+
+echo "🚀 Promovendo GREEN para 100%"
 
 echo "green" > state/active-slot.txt
 echo "0" > state/canary-percent.txt
@@ -13,4 +16,4 @@ export CANARY_SLOT=
 
 docker compose up -d nginx
 
-echo "✅ Produção estabilizada"
+echo "✅ Produção estabilizada em GREEN"
