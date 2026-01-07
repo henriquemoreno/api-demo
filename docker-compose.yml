@@ -19,12 +19,11 @@ services:
     image: nginx:alpine
     ports:
       - "8080:80"
-    environment:
-      ACTIVE_SLOT: ${ACTIVE_SLOT}
-      CANARY_SLOT: ${CANARY_SLOT}
-      CANARY_PERCENT: ${CANARY_PERCENT}
     volumes:
-      - ./infra/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./active-slot.txt:/state/active-slot.txt:ro
+      - ./canary-slot.txt:/state/canary-slot.txt:ro
+      - ./canary-percent.txt:/state/canary-percent.txt:ro
     depends_on:
       - apidemo-blue
       - apidemo-green

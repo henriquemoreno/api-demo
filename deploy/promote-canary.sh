@@ -1,21 +1,11 @@
 #!/bin/bash
 set -e
 
-NEW_SLOT=$1
+SLOT=$(cat canary-slot.txt)
 
-if [ -z "$NEW_SLOT" ]; then
-  echo "❌ Informe o slot a promover (blue|green)"
-  exit 1
-fi
-
-echo "🚀 PROMOVENDO slot: $NEW_SLOT"
-
-echo "$NEW_SLOT" > active-slot.txt
-
-export ACTIVE_SLOT=$NEW_SLOT
-unset CANARY_SLOT
-unset CANARY_PERCENT
+echo "$SLOT" > active-slot.txt
+rm -f canary-slot.txt canary-percent.txt
 
 docker compose up -d nginx
 
-echo "✅ $NEW_SLOT agora é PRODUÇÃO (100%)"
+echo "🚀 Slot $SLOT promovido para 100%"
