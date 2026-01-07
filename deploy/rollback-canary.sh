@@ -2,10 +2,8 @@
 set -e
 
 ACTIVE=$(cat state/active-slot.txt)
-CANARY=$(cat state/canary-slot.txt)
 
-echo "$CANARY" > state/active-slot.txt
+echo "❌ Rollback para $ACTIVE"
 echo "0" > state/canary-percent.txt
 
-echo "🚀 Promote: $CANARY agora é ativo"
 docker compose up -d nginx

@@ -13,42 +13,37 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 🔐 Login no GHCR
       - name: Login GHCR
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # 🏗️ Build da imagem
-      - name: Build image
-        run: |
-          docker build -t ghcr.io/henriquemoreno/apidemo:${{ github.sha }} .
+      - name: Build
+        run: docker build -t ghcr.io/henriquemoreno/apidemo:${{ github.sha }} .
 
-      # 📦 Push da imagem
-      - name: Push image
-        run: |
-          docker push ghcr.io/henriquemoreno/apidemo:${{ github.sha }}
+      - name: Push
+        run: docker push ghcr.io/henriquemoreno/apidemo:${{ github.sha }}
 
-      # 🚀 Deploy do slot GREEN
       - name: Deploy Green
         run: |
           export IMAGE_TAG=${{ github.sha }}
           docker compose up -d apidemo-green
 
-      # ⏳ Aguarda o GREEN ficar READY
-      - name: Wait Green Ready
-        run: |
-          chmod +x deploy/*.sh
-          ./deploy/wait-for-ready.sh apidemo-green
+      - name: Wait Ready
+        run: ./deploy/wait-for-ready.sh apidemo-green
 
-      # 🟡 Ativa Canary (10%)
       - name: Enable Canary (10%)
-        run: |
-          ./deploy/enable-canary.sh green 10
+        run: ./deploy/enable-canary.sh green 10
 
-      # ✅ Promove Canary automaticamente para 100%
-      - name: Promote Canary
-        run: |
-          ./deploy/promote-canary.sh
+      - name: Canary soak
+        run: sleep 60
+
+      - name: Smoke Test
+        run: curl -f http://localhost:8080/health
+
+      - name: Promote
+        run: ./deploy/promote-canary.sh
+
+      - name: Rollback on failure
+        if: failure()
+        run: ./deploy/rollback-canary.sh

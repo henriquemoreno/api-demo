@@ -1,12 +1,11 @@
 #!/bin/bash
 set -e
 
-SLOT=$1
+CANARY_SLOT=$1
 PERCENT=$2
 
-echo "$SLOT" > canary-slot.txt
-echo "$PERCENT" > canary-percent.txt
+echo "$CANARY_SLOT" > state/canary-slot.txt
+echo "$PERCENT" > state/canary-percent.txt
 
+echo "🐤 Canary $PERCENT% → $CANARY_SLOT"
 docker compose up -d nginx
-
-echo "🧪 Canary $PERCENT% ativo para $SLOT"
