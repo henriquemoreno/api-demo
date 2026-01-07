@@ -1,19 +1,15 @@
 services:
   apidemo-blue:
-    image: ghcr.io/henriquemoreno/apidemo:${IMAGE_TAG}
+    image: ghcr.io/henriquemoreno/apidemo:${IMAGE_TAG:-latest}
     environment:
-      APP_SLOT: blue
-      APP_VERSION: ${IMAGE_TAG}
-    expose:
-      - "8080"
+      - APP_SLOT=blue
+      - APP_VERSION=${IMAGE_TAG:-latest}
 
   apidemo-green:
-    image: ghcr.io/henriquemoreno/apidemo:${IMAGE_TAG}
+    image: ghcr.io/henriquemoreno/apidemo:${IMAGE_TAG:-latest}
     environment:
-      APP_SLOT: green
-      APP_VERSION: ${IMAGE_TAG}
-    expose:
-      - "8080"
+      - APP_SLOT=green
+      - APP_VERSION=${IMAGE_TAG:-latest}
 
   nginx:
     image: nginx:alpine
