@@ -1,19 +1,10 @@
 #!/bin/bash
-set -e
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT_DIR"
+ACTIVE=$(cat state/active-slot.txt)
 
-echo "❌ Rollback para BLUE"
+echo "❌ Rollback para $ACTIVE"
 
-echo "blue" > state/active-slot.txt
-echo "0" > state/canary-percent.txt
 echo "" > state/canary-slot.txt
+echo "0" > state/canary-percent.txt
 
-export ACTIVE_SLOT=blue
-export CANARY_PERCENT=0
-export CANARY_SLOT=
-
-docker compose up -d nginx
-
-echo "✅ Rollback concluído"
+./deploy/_compose.sh up -d nginx

@@ -1,16 +1,15 @@
 #!/bin/bash
-set -e
-
 SERVICE=$1
-MAX=60
 
-for i in $(seq 1 $MAX); do
-  if docker compose exec -T $SERVICE curl -sf http://localhost:8080/ready > /dev/null; then
-    echo "✅ $SERVICE READY"
+for i in {1..60}; do
+  STATUS=$(./deploy/_compose.sh ps --format json | jq -r ".[] | select(.Service==\"$SERVICE\") | .Health")
+  if [ "$STATUS" = "healthy" ]; then
+    echo "✅ $SERVICE está READY"
     exit 0
   fi
+  echo "⏳ Aguardando $SERVICE ($i/60)"
   sleep 2
 done
 
-echo "❌ $SERVICE NÃO ficou READY"
+echo "❌ $SERVICE não ficou READY"
 exit 1

@@ -1,19 +1,11 @@
 #!/bin/bash
-set -e
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT_DIR"
+NEW_SLOT=$(cat state/canary-slot.txt)
 
-echo "🚀 Promovendo GREEN para 100%"
+echo "🚀 Promovendo $NEW_SLOT para 100%"
 
-echo "green" > state/active-slot.txt
-echo "0" > state/canary-percent.txt
+echo "$NEW_SLOT" > state/active-slot.txt
 echo "" > state/canary-slot.txt
+echo "0" > state/canary-percent.txt
 
-export ACTIVE_SLOT=green
-export CANARY_PERCENT=0
-export CANARY_SLOT=
-
-docker compose up -d nginx
-
-echo "✅ Produção estabilizada em GREEN"
+./deploy/_compose.sh up -d nginx
