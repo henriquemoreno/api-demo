@@ -1,11 +1,16 @@
 #!/bin/bash
 set -e
 
-ACTIVE=$(cat state/active-slot.txt)
-CANARY=$(cat state/canary-slot.txt)
+echo "🚀 Promovendo canary para 100%"
 
-echo "$CANARY" > state/active-slot.txt
-echo "0" > state/canary-percent.txt
+echo "ACTIVE_SLOT=green" > state/active-slot.txt
+echo "CANARY_PERCENT=0" > state/canary-percent.txt
+echo "CANARY_SLOT=" > state/canary-slot.txt
 
-echo "🚀 Promote: $CANARY agora é ativo"
+export ACTIVE_SLOT=green
+export CANARY_PERCENT=0
+export CANARY_SLOT=
+
 docker compose up -d nginx
+
+echo "✅ Produção 100% em GREEN"
