@@ -1,0 +1,27 @@
+events {}
+
+http {
+
+    upstream backend {
+        split_clients "$request_id" $target_upstream {
+            ${CANARY_PERCENT}% ${CANARY_SLOT};
+            *               ${ACTIVE_SLOT};
+        }
+
+        server api-demo-apidemo-blue-1:8080;
+        server api-demo-apidemo-green-1:8080;
+    }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $remote_addr;
+
+            add_header X-App-Slot $target_upstream always;
+            add_header X-Deploy-Slot ${ACTIVE_SLOT} always;
+        }
+    }
+}
