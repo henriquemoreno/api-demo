@@ -17,25 +17,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 🔐 Login no GitHub Container Registry (GHCR)
+      # 🔐 Login no GitHub Container Registry
       - name: Login to GHCR
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       # 🏗️ Build da imagem
       - name: Build image
-        run: docker build -t ghcr.io/henriquemoreno/apidemo:${{ github.sha }} .
+        run: |
+          docker build -t ghcr.io/henriquemoreno/apidemo:${{ github.sha }} .
 
-
-      # 📦 Push para o GHCR
+      # 📦 Push da imagem
       - name: Push image
-        run: docker push ghcr.io/henriquemoreno/apidemo:${{ github.sha }}
-
+        run: |
+          docker push ghcr.io/henriquemoreno/apidemo:${{ github.sha }}
 
       # 🚀 Deploy Blue/Green automático
-      - name: Deploy Green
+      - name: Deploy Green Slot
         run: |
           export IMAGE_TAG=${{ github.sha }}
+          export ACTIVE_SLOT=blue
+          export CANARY_SLOT=
+          export CANARY_PERCENT=0
+
           chmod +x deploy/*.sh
           ./deploy/switch-slot.sh green
-
