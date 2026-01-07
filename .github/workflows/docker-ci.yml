@@ -18,11 +18,14 @@ jobs:
       - name: Login GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build
+      - name: Build image
         run: docker build -t ghcr.io/henriquemoreno/apidemo:${{ github.sha }} .
 
-      - name: Push
+      - name: Push image
         run: docker push ghcr.io/henriquemoreno/apidemo:${{ github.sha }}
+
+      - name: Make deploy scripts executable
+        run: chmod +x deploy/*.sh
 
       - name: Deploy Green
         run: |
@@ -41,7 +44,7 @@ jobs:
       - name: Smoke Test
         run: curl -f http://localhost:8080/health
 
-      - name: Promote
+      - name: Promote Canary
         run: ./deploy/promote-canary.sh
 
       - name: Rollback on failure
