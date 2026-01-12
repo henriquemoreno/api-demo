@@ -43,7 +43,7 @@ jobs:
           docker compose up -d apidemo-green
 
       # 7️⃣ Aguarda GREEN ficar READY
-      - name: Wait GREEN readiness
+      - name: Wait Ready
         run: ./deploy/wait-for-ready.sh apidemo-green
 
       # 8️⃣ Habilita Canary (10% GREEN)
